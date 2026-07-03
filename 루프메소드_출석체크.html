@@ -306,8 +306,12 @@ let history = [];
 // ── API 호출 ─────────────────────────────
 async function api(params) {
   const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
-  const res = await fetch(url);
-  return res.json();
+  const res = await fetch(url, { redirect: 'follow' });
+  const text = await res.text();
+  // Apps Script가 HTML 래퍼를 붙이는 경우 JSON 부분만 추출
+  const match = text.match(/\{[\s\S]*\}/);
+  if (match) return JSON.parse(match[0]);
+  return JSON.parse(text);
 }
 
 // ── 초기 로딩 ────────────────────────────
